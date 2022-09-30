@@ -240,7 +240,7 @@
         }
       }
       span{
-        color: #000;
+        // color: #000 !important;
       }
       &:hover{
         .svg-icon{
@@ -253,4 +253,10 @@
     }
   }
 }
-
+#app .sidebar-container .is-active > .el-submenu__title {
+    color: #43a7fe!important;
+}
+#app .sidebar-container .el-submenu .el-menu-item {
+  min-width: 160px !important;
+  background-color: white !important;
+}

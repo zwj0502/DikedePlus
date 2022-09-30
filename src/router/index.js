@@ -1,13 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import approvalsRouter from './modules/approvals'
-import departmentsRouter from './modules/departments'
-import employeesRouter from './modules/employees'
-import permissionRouter from './modules/permission'
-import attendancesRouter from './modules/attendances'
-import salarysRouter from './modules/salarys'
-import settingRouter from './modules/setting'
-import socialRouter from './modules/social'
+import task from './modules/task'
+import node from './modules/node'
+import vm from './modules/vm'
+import user from './modules/user'
+import sku from './modules/sku'
+import policy from './modules/policy'
+import order from './modules/order'
 Vue.use(Router)
 
 /* Layout */
@@ -29,19 +28,19 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/home',
     children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      path: 'home',
+      name: 'home',
+      component: () => import('@/views/home/index'),
+      meta: { title: '帝可得', icon: 'el-icon-s-home' }
     }]
   },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-const asyncRoutes = [approvalsRouter, departmentsRouter, employeesRouter, permissionRouter, attendancesRouter, salarysRouter, settingRouter, socialRouter]
+const asyncRoutes = [task, node, vm, user, sku, policy, order]
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support

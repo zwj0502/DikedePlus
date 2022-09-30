@@ -10,7 +10,8 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
-
+var dayjs = require('dayjs')
+Vue.prototype.$dayjs = dayjs
 import '@/icons' // icon
 import '@/permission' // permission control
 // if (process.env.NODE_ENV === 'production') {

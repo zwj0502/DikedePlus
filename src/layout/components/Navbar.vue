@@ -1,13 +1,23 @@
 <template>
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
+
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img v-imgerror="defaultImg" src="@/assets/imgs/photo.png" class="user-avatar">   <span class="userName">{{ userName }}</span>
+          <img v-imgerror="defaultImg" src="@/assets/imgs/photo.png" class="user-avatar"><span class="userName">{{ userName }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <button class="layout" @click="logout">退出</button>
+        <el-dropdown-menu slot="dropdown" class="user-dropdown">
+          <router-link to="/">
+            <el-dropdown-item>
+              退出
+            </el-dropdown-item>
+          </router-link>
+        </el-dropdown-menu>
       </el-dropdown>
     </div>
   </div>
@@ -15,17 +25,14 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import defaultImg from '@/assets/imgs/photo.png'
+// import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import defaultImg from '@/assets/imgs/photo.png'
 
 export default {
   components: {
+    // Breadcrumb,
     Hamburger
-  },
-  data() {
-    return {
-      defaultImg: defaultImg
-    }
   },
   computed: {
     ...mapGetters([
@@ -35,6 +42,11 @@ export default {
       'image'
     ])
   },
+  data() {
+    return {
+      defaultImg: defaultImg
+    }
+  },
   created() {
     this.$store.dispatch('user/getUserInfo', this.$store.getters.userId)
   },
@@ -42,7 +54,7 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    logout() {
+    async logout() {
       this.$store.dispatch('user/logout')
       this.$router.push('/login')
     }
@@ -154,3 +166,4 @@ export default {
   }
 }
 </style>
+
