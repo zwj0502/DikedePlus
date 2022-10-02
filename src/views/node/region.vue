@@ -2,47 +2,15 @@
   <div class="app-container">
     <el-card> <div class="search"><span style="margin-right:10px;font-size: 14px;color: #606266;">区域搜索：</span>
                 <input v-model="serachTest" type="text" class="searchinput" placeholder="请输入">
-                <el-button type="primary" icon="el-icon-search">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="searcherBtn">查询</el-button>
               </div>
       <div class="resale">
         <el-button type="warning" icon="el-icon-plus" @click="visible = true">新建</el-button>
-        <el-table
-          :loading="loading"
-          :data="tableData"
-          style="width: 100%"
-        >
-          <el-table-column
-            type="index"
-            label="序号"
-            width="100"
-          />
-          <el-table-column
-            prop="name"
-            label="区域名称"
-            width="350"
-          />
-          <el-table-column
-            prop="nodeCount"
-            label="点位数"
-          />
-          <el-table-column
-            prop="remark"
-
-            label="备注说明"
-          />
-          <el-table-column
-            label="操作"
-          >
-            <span>查看详情</span>
-            <span>编辑</span>
-            <span>删除</span>
-          </el-table-column>
-
-        </el-table>
-
+        <regionMain v-if="isMain" :table-data="tableData" @deleteOk="getLevelManagement" />
+        <regionMain v-else :table-data="searchList" @deleteOk="searcherBtn" />
         <!-- 分页组件 -->
-        <Paging :loading="loading" :total-count="totalCount" :page-index="pageIndex" :total-page="totalPage" @getCarList="getCarList" />
-        <NewRegion :visible="visible" />
+        <Paging v-if="isend" :loading="loading" :total-count="totalCount" :page-index="pageIndex" :total-page="totalPage" @getCarList="getCarList" />
+        <NewRegion :visible.sync="visible" @postLevelManagement="getLevelManagement" />
       </div>
     </el-card>
 
@@ -54,11 +22,13 @@
 import { getLevelManagementAPI } from '@/api/LevelManagement'
 import Paging from '@/components/Paging'
 import NewRegion from './components/NewRegion.vue'
+import regionMain from './components/regionMain.vue'
 export default {
   name: 'Regoin',
   components: {
     Paging,
-    NewRegion
+    NewRegion,
+    regionMain
   },
   data() {
     return {
@@ -69,7 +39,19 @@ export default {
       totalPage: '',
       totalCount: '',
       loading: false,
-      visible: false
+      visible: false,
+      searchList: [],
+      isMain: true,
+      isend: true
+    }
+  },
+  watch: {
+    'tableData.length'(val) {
+      // console.log(val)
+      if (val === 0) {
+        this.pageIndex = this.pageIndex - 1
+        this.getLevelManagement()
+      }
     }
   },
   mounted() {
@@ -103,6 +85,22 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    async searcherBtn() {
+      // this.searchList = this.tableData.filter((item) => {
+      //   console.log(item.name)
+      //   // item.name === this.serachTest
+      //   // return true
+      // })
+      const { data } = await getLevelManagementAPI({ name: this.serachTest })
+      this.isMain = false
+      this.searchList = data.currentPageRecords
+      if (data.currentPageRecords.length < 2) {
+        this.isend = false
+      } else {
+        this.isend = true
+      }
+      // console.log(data)
     }
   }
 }
@@ -134,7 +132,5 @@ export default {
   background-color: white;
   padding: 17px;
 }
-span{
-  margin-right: 15px;
-}
+
 </style>
