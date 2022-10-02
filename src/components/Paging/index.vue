@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     getCarList(pageIndex) {
-      console.log(pageIndex)
+      // console.log(pageIndex)
       this.isShow = true
       if (pageIndex === 0) { // page等于0，表示已是第一页，提示用户已到第一页
         this.$message.error('已经在第一页了')

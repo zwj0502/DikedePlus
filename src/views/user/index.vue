@@ -16,7 +16,7 @@
     <!-- 展示结果 -->
     <el-row class="result">
       <!-- 新建按钮 -->
-      <el-button type="primary" class="add">
+      <el-button type="primary" class="add" @click="addRole">
         <span class="el-icon-circle-plus-outline" />
         <span>新建</span>
       </el-button>
@@ -54,9 +54,9 @@
         <el-table-column
           label="操作"
         >
-          <template>
+          <template slot-scope="{row}">
             <el-button type="text" size="14">修改</el-button>
-            <el-button type="text" size="14" style="color:red">删除</el-button>
+            <el-button type="text" size="14" style="color:red" @click="delUser(row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,14 +68,18 @@
         @getCarList="refresh"
       />
     </el-row>
+    <!-- 弹框组件 -->
+    <RoleDialog :is-show.sync="isShowDialog" />
   </div>
 </template>
 
 <script>
 import { getUserRoleAPI } from '@/api/user'
+import { delUserAPI } from '@/api/user'
 import Paging from '@/components/Paging/index.vue'
+import RoleDialog from './components/roleDialog.vue'
 export default {
-  components: { Paging },
+  components: { Paging, RoleDialog },
   data() {
     return {
       tableData: [],
@@ -84,7 +88,8 @@ export default {
         pageSize: 10
       },
       totalPage: 0,
-      totalCount: 0
+      totalCount: 0,
+      isShowDialog: true
     }
   },
   created() {
@@ -100,7 +105,7 @@ export default {
         roleId: '',
         isRepair: ''
       })
-      console.log(data)
+      // console.log(data)
       this.totalPage = data.totalPage
       this.totalCount = data.totalCount
       this.tableData = data.currentPageRecords
@@ -108,9 +113,30 @@ export default {
     // pageIndex更新后，再发请求，重新渲染
     refresh(pageIndex) {
       // pageIndex进行更新
-      console.log(pageIndex)
+      // console.log(pageIndex)
       this.page.pageIndex = pageIndex
       this.getUserRole()
+    },
+    // 点击删除功能
+    async  delUser(userId) {
+      try {
+        // 二次确认
+        await this.$confirm('确认删除该角色吗', '删除提示', {
+          cancelButtonText: '取消',
+          confirmButtonText: '确定'
+        })
+        await delUserAPI(userId)
+        this.$message.success('删除成功')
+        // 调用刷新功能，更新视图
+        this.refresh()
+      } catch (error) {
+        this.$message.error('删除失败')
+      }
+    },
+    // 点击新增按钮
+    addRole() {
+      // 点击按钮，更改显示属性
+      this.isShowDialog = true
     }
   }
 }

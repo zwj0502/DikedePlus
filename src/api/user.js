@@ -24,3 +24,15 @@ export const getUserRoleAPI = (params) => {
     params
   })
 }
+
+/**
+ * 把用户从列表中删除
+ * @param {Number} id 用户的id
+ * @returns
+ */
+export const delUserAPI = (id) => {
+  return request({
+    method: 'DELETE',
+    url: `/api/user-service/user/${id}`
+  })
+}
