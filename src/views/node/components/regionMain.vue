@@ -26,7 +26,7 @@
           >
             <template slot-scope="{row}">
               <span style="color:#5f84ff" @click="getRegionaldetails(row)">查看详情</span>
-              <span style="color:#5f84ff">编辑</span>
+              <span style="color:#5f84ff" @click="TheEditorBtn(row)">编辑</span>
               <span @click="deleteRegionaldetails(row)">删除</span>
             </template>
           </el-table-column>
@@ -66,6 +66,11 @@ export default {
     },
     async deleteRegionaldetails(row) {
       try {
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
         await deleteRegionaldetailsAPI(row.id)
         //   console.log(row)
         this.$message.success('删除成功')
@@ -73,6 +78,9 @@ export default {
       } catch (error) {
         this.$message.error('区域下存在点位，不可删除')
       }
+    },
+    TheEditorBtn(row) {
+      this.$emit('TheEditorBtn', row)
     }
   }
 }

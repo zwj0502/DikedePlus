@@ -50,3 +50,16 @@ export function deleteRegionaldetailsAPI(id) {
     method: 'delete'
   })
 }
+/**
+ * 删除区域
+ * @param {*} id 区域id
+ * @returns
+ */
+export function TheEditorRegionaldetailsAPI(id, data) {
+  return request({
+    url: `/api/vm-service/region/${id}`,
+    method: 'put',
+    data
+  })
+}
+

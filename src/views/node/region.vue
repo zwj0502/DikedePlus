@@ -6,11 +6,11 @@
               </div>
       <div class="resale">
         <el-button type="warning" icon="el-icon-plus" @click="visible = true">新建</el-button>
-        <regionMain v-if="isMain" :table-data="tableData" @deleteOk="getLevelManagement" />
+        <regionMain v-if="isMain" :table-data="tableData" @deleteOk="getLevelManagement" @TheEditorBtn="TheEditorBtn" />
         <regionMain v-else :table-data="searchList" @deleteOk="searcherBtn" />
         <!-- 分页组件 -->
         <Paging v-if="isend" :loading="loading" :total-count="totalCount" :page-index="pageIndex" :total-page="totalPage" @getCarList="getCarList" />
-        <NewRegion :visible.sync="visible" @postLevelManagement="getLevelManagement" />
+        <NewRegion ref="NewRegion" :visible.sync="visible" @postLevelManagement="getLevelManagement" />
       </div>
     </el-card>
 
@@ -101,6 +101,12 @@ export default {
         this.isend = true
       }
       // console.log(data)
+    },
+    TheEditorBtn(node) {
+      console.log(node)
+      this.$refs.NewRegion.formDate = { ...node }
+      // console.log(this.$refs.NewRegion.formDate)
+      this.visible = true
     }
   }
 }
