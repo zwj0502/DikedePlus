@@ -15,18 +15,18 @@
           label-width="80px"
         >
           <el-form-item
-            prop="regionName"
+            prop="name"
             label="区域名称"
-            :rules="[{required:true,message:'名字不能为空',trigger:'blur'}, { min: 1, max: 15, message: '区域名称长度1--15', trigger: 'blur' }]"
+            :rules="[{required:true,message:'名字不能为空',trigger:'blur'}]"
           >
-            <el-input v-model.trim="formDate.name" />
+            <el-input v-model="formDate.name" />
           </el-form-item>
           <el-form-item
             prop="remark"
             label="备注说明"
-            :rules="[{required:true,message:'备注不能为空',trigger:'blur'}, { min: 1, max: 50, message: '备注长度1--50', trigger: 'blur' }]"
+            :rules="[{required:true,message:'备注不能为空',trigger:'blur'}]"
           >
-            <el-input v-model.trim="formDate.remark" type="textarea" row="3" />
+            <el-input v-model="formDate.remark" type="textarea" row="3" />
           </el-form-item>
         </el-form>
         <el-row slot="footer" type="flex" justify="center" align="middle" class="dialog-footer">
@@ -53,15 +53,17 @@ export default {
         name: '',
         remark: ''
       },
-      // rules: {
-      //   regionName: [
-      //     { required: true, message: '区域名称不能为空', trigger: 'blur' }
+      rules: {
+        regionName: [
+          { required: true, message: '区域名称不能为空', trigger: 'blur' },
+          { min: 1, max: 15, message: '区域名称长度1--15', trigger: 'blur' }
 
-      //   ],
-      //   remark: [{ required: true, message: '备注说明不能为空', trigger: 'blur' }
+        ],
+        remark: [{ required: true, message: '备注说明不能为空', trigger: 'blur' },
+          { min: 1, max: 50, message: '备注长度1--50', trigger: 'blur' }
 
-      //   ]
-      // },
+        ]
+      },
       loading: false
     }
   },
@@ -74,12 +76,11 @@ export default {
     handleClsoe() {
       this.$emit('update:visible', false)
       this.$refs.roleDialogForm.resetFields()
-      this.formDate = ''
     },
     async getBtn() {
       this.loading = true
       try {
-        this.formDate.id ? await TheEditorRegionaldetailsAPI(this.formDate.id, this.formDate) : await postLevelManagementAPI(this.formDate)
+        this.formDate.id ? await TheEditorRegionaldetailsAPI(this.formDate.id, { regionName: this.formDate.name, remark: this.formDate.remark }) : await postLevelManagementAPI({ regionName: this.formDate.name, remark: this.formDate.remark })
         this.$refs.roleDialogForm.resetFields()
         this.$message.success(this.formDate.id ? '编辑成功' : '创建成功')
         this.handleClsoe()
