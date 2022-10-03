@@ -113,10 +113,17 @@ export default {
         roleId: this.userInfo.roleId,
         isRepair: this.userInfo.isRepair
       })
-      // console.log(data)
+      console.log(data)
       this.totalPage = data.totalPage
       this.totalCount = data.totalCount
       this.tableData = data.currentPageRecords
+      // 进行判定是否前进一页
+      const { currentPageRecords, totalCount } = data
+      if (currentPageRecords.length === 0 && totalCount > 0) {
+        this.page.pageIndex--
+        this.getUserRole()
+        this.$refs.paging.isShow = false
+      }
     },
     // pageIndex更新后，再发请求，重新渲染
     refresh(pageIndex) {
@@ -124,6 +131,8 @@ export default {
       // console.log(pageIndex)
       this.page.pageIndex = pageIndex
       this.getUserRole()
+      // 页码的isShow改为true
+      this.$refs.paging.isShow = true
     },
     // 点击删除功能
     async  delUser(userId) {

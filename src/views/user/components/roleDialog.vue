@@ -66,7 +66,7 @@ export default {
   data() {
     // 定义手机号码的验证
     const mobileCheck = (rule, value, callback) => {
-      if (/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8}$/.test(value.trim())) {
+      if (/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8}$/.test(value)) {
         callback()
       } else {
         callback(new Error('手机号格式错误'))
@@ -96,7 +96,7 @@ export default {
           { required: true, message: '请输入', trigger: 'blur' }
         ],
         mobile: [
-          { required: true, message: '请输入', trigger: 'change' },
+          { required: true, message: '请输入', trigger: 'blur' },
           { validator: mobileCheck, trigger: 'blur' }
         ],
         // regionId: [
