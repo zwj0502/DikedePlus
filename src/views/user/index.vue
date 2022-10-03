@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- 头部 -->
-    <el-row class="search">
+    <!-- 头部抽成组件 -->
+    <!-- <el-row class="search">
       <el-form :inline="true">
         <el-form-item label="人员搜索:">
           <el-input placeholder="请输入" />
@@ -12,7 +12,8 @@
           </el-button>
         </el-form-item>
       </el-form>
-    </el-row>
+    </el-row> -->
+    <Search class="search" @SearchFn="SearchUser" />
     <!-- 展示结果 -->
     <el-row class="result">
       <!-- 新建按钮 -->
@@ -55,13 +56,14 @@
           label="操作"
         >
           <template slot-scope="{row}">
-            <el-button type="text" size="14">修改</el-button>
+            <el-button type="text" size="14" @click="edit(row)">修改</el-button>
             <el-button type="text" size="14" style="color:red" @click="delUser(row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- 底部分页 -->
       <Paging
+        ref="paging"
         :total-page="totalPage"
         :total-count="totalCount"
         :page-index="page.pageIndex"
@@ -69,17 +71,18 @@
       />
     </el-row>
     <!-- 弹框组件 -->
-    <RoleDialog :is-show.sync="isShowDialog" />
+    <RoleDialog ref="addRole" :is-show.sync="isShowDialog" @refresh="refresh(page.pageIndex)" />
   </div>
 </template>
 
 <script>
-import { getUserRoleAPI } from '@/api/user'
+import { getUserRoleAPI, searchUserAPI } from '@/api/user'
 import { delUserAPI } from '@/api/user'
 import Paging from '@/components/Paging/index.vue'
 import RoleDialog from './components/roleDialog.vue'
+import Search from './components/Search.vue'
 export default {
-  components: { Paging, RoleDialog },
+  components: { Paging, RoleDialog, Search },
   data() {
     return {
       tableData: [],
@@ -87,9 +90,14 @@ export default {
         pageIndex: 1,
         pageSize: 10
       },
+      userInfo: {
+        userName: '',
+        roleId: '',
+        isRepair: ''
+      },
       totalPage: 0,
       totalCount: 0,
-      isShowDialog: true
+      isShowDialog: false
     }
   },
   created() {
@@ -101,9 +109,9 @@ export default {
       const { data } = await getUserRoleAPI({
         pageIndex: this.page.pageIndex,
         pageSize: this.page.pageSize,
-        userName: '',
-        roleId: '',
-        isRepair: ''
+        userName: this.userInfo.userName,
+        roleId: this.userInfo.roleId,
+        isRepair: this.userInfo.isRepair
       })
       // console.log(data)
       this.totalPage = data.totalPage
@@ -128,7 +136,7 @@ export default {
         await delUserAPI(userId)
         this.$message.success('删除成功')
         // 调用刷新功能，更新视图
-        this.refresh()
+        this.refresh(this.page.pageIndex)
       } catch (error) {
         this.$message.error('删除失败')
       }
@@ -137,13 +145,55 @@ export default {
     addRole() {
       // 点击按钮，更改显示属性
       this.isShowDialog = true
+      // 如果先搜再添加，想展示全部数据，就添加这行
+      this.userInfo.userName = ''
+    },
+    // 点击编辑
+    edit(row) {
+      console.log(row)
+      // 让数据回显并显示弹窗
+      this.$refs.addRole.formData = {
+        userName: row.userName,
+        roleId: row.roleId,
+        mobile: row.mobile,
+        regionId: row.regionId,
+        regionName: row.regionName,
+        status: row.status,
+        image: row.image
+      }
+      this.$refs.addRole.id = row.id
+      this.isShowDialog = true
+    },
+    // 点击搜索按钮进行搜索
+    async SearchUser(userName) {
+      try {
+        const { data } = await searchUserAPI(
+          {
+            userName: userName
+          }
+        )
+        console.log(data)
+        // 把当前列表替换掉
+        this.tableData = data.currentPageRecords
+        // 把渲染列表的变量用户名更改掉，点下一页就自动是添加要求的了
+        this.userInfo.userName = userName
+        // 底边页数都同步
+        // 如果上面通过，除了数据初始化外，页码也初始化
+        this.page.pageIndex = 1
+        // 页码的isShow改为true
+        this.$refs.paging.isShow = true
+        this.totalCount = data.totalCount
+        this.totalPage = data.totalPage
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-  .search {
+ ::v-deep .search {
     font-size: 14px;
     margin-top: 20px;
     display: flex;
@@ -152,7 +202,7 @@ export default {
     margin-bottom: 20px;
     padding-left: 17px;
     background-color: #fff;
-  .el-icon-search {
+    ::v-deep .el-icon-search {
     margin-right: 5px;
   }
 
