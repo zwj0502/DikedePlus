@@ -26,6 +26,10 @@ export default {
       type: [String, Number],
       //   required: true
       default: 0
+    },
+    tableData: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -55,6 +59,10 @@ export default {
           return
         }
 
+        // this.$emit('getCarList', pageIndex)
+        // 请求数据长度不为10，表示没有数据，提示用户到最后一页
+        // this.$message.error('已经在最后一页了')
+        // if (this.pageIndex === +this.totalPage) return
         this.$emit('getCarList', pageIndex)
       } catch (error) {
         this.$message.error(error)
