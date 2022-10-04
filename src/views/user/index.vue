@@ -113,7 +113,7 @@ export default {
         roleId: this.userInfo.roleId,
         isRepair: this.userInfo.isRepair
       })
-      console.log(data)
+      // console.log(data)
       this.totalPage = data.totalPage
       this.totalCount = data.totalCount
       this.tableData = data.currentPageRecords
@@ -159,7 +159,7 @@ export default {
     },
     // 点击编辑
     edit(row) {
-      console.log(row)
+      // console.log(row)
       // 让数据回显并显示弹窗
       this.$refs.addRole.formData = {
         userName: row.userName,
@@ -181,7 +181,7 @@ export default {
             userName: userName
           }
         )
-        console.log(data)
+        // console.log(data)
         // 把当前列表替换掉
         this.tableData = data.currentPageRecords
         // 把渲染列表的变量用户名更改掉，点下一页就自动是添加要求的了
@@ -215,8 +215,8 @@ export default {
     margin-right: 5px;
   }
 
- ::v-deep .el-form-item__label {
-      font-weight: normal;
+ ::v-deep .el-form-item__label  {
+      font-weight: 400 !important;
   }
 
   ::v-deep .el-input__inner {
