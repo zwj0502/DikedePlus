@@ -32,6 +32,14 @@ export default {
     obj.endtime = moment(moment().week(moment().week()).endOf('week').add(1, 'days').valueOf()).format('YYYY-MM-DD HH:mm:ss')
     return obj
   },
+  // 获取当前周开始时间，不带时分秒
+  getCurrWeekDay() {
+    const obj = {
+      starttime: ''
+    }
+    obj.starttime = moment(moment().week(moment().week()).startOf('week').add(1, 'days').valueOf()).format('YYYY-MM-DD')
+    return obj
+  },
   // 获取上一周的开始结束时间
   getLastWeekDays() {
     const obj = {
@@ -50,6 +58,14 @@ export default {
     }
     obj.starttime = moment(moment().month(moment().month()).startOf('month').valueOf()).format('YYYY-MM-DD HH:mm:ss')
     obj.endtime = moment(moment().month(moment().month()).endOf('month').valueOf()).format('YYYY-MM-DD HH:mm:ss')
+    return obj
+  },
+  // 获取当前月除去时分秒
+  getCurrMonthDay() {
+    const obj = {
+      starttime: ''
+    }
+    obj.starttime = moment(moment().month(moment().month()).startOf('month').valueOf()).format('YYYY-MM-DD')
     return obj
   },
   // 获取上一个月的开始结束时间
@@ -71,6 +87,13 @@ export default {
     obj.starttime = moment().startOf('year').format('YYYY-MM-DD HH:mm:ss')
     obj.endtime = moment().endOf('year').format('YYYY-MM-DD HH:mm:ss')
     return obj
+  },
+  // 获取当前年，不含时分秒
+  getCurrentYearDay() {
+    const obj = {
+      starttime: ''
+    }
+    obj.starttime = moment().startOf('year').format('YYYY-MM-DD')
+    return obj
   }
-
 }
