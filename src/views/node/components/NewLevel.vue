@@ -15,7 +15,7 @@
           label-width="80px"
         >
           <el-form-item
-            prop="regionName"
+            prop="name"
             label="点位名称"
             :rules="[{required:true,message:'名字不能为空',trigger:'blur'}, { min: 1, max: 15, message: '区域名称长度1--15', trigger: 'blur' }]"
           >
@@ -29,14 +29,14 @@
             </el-select>
           </el-form-item>
           <el-form-item label="所在商圈">
-            <el-select v-model="formDate.businessId" placeholder="所在商圈">
+            <el-select v-model="formDate.Business" placeholder="所在商圈">
               <el-option v-for="item in Businesscircle" :key="item.id" :label="item.name" :value="item.id" />
               <!-- <el-option label="区域一" value="shanghai" />
             <el-option label="区域二" value="beijing" /> -->
             </el-select>
           </el-form-item>
           <el-form-item label="归属合作商">
-            <el-select v-model="formDate.businessId" placeholder="归属合作商">
+            <el-select v-model="formDate.ownerId" placeholder="归属合作商">
               <el-option v-for="item in partnersList" :key="item.id" :label="item.name" :value="item.id" />
               <!-- <el-option label="区域一" value="shanghai" />
             <el-option label="区域二" value="beijing" /> -->
@@ -44,7 +44,7 @@
           </el-form-item>
           <el-form-item label="详细地址">
             <el-cascader
-              v-model="selectedOptions"
+              v-model="formDate.selectedOptions"
               size="large"
               :options="options"
               @change="handleChange"
@@ -54,7 +54,7 @@
             prop="remark"
             :rules="[{required:true,message:'备注不能为空',trigger:'blur'}, { min: 1, max: 50, message: '备注长度1--50', trigger: 'blur' }]"
           >
-            <el-input v-model.trim="formDate.remark" type="textarea" row="3" />
+            <el-input v-model.trim="formDate.addr" type="textarea" row="3" />
           </el-form-item>
         </el-form>
         <el-row slot="footer" type="flex" justify="center" align="middle" class="dialog-footer">
@@ -90,7 +90,12 @@ export default {
     return {
       formDate: {
         name: '',
-        remark: ''
+        regionId: '',
+        Business: '',
+        ownerId: '',
+        selectedOptions: '',
+        addr: ''
+
       },
       Businesscircle: [
         { id: 1, name: '学校' },
@@ -99,7 +104,6 @@ export default {
         { id: 4, name: '交通枢纽' }
       ],
       options: regionData,
-      selectedOptions: [],
       // rules: {
       //   regionName: [
       //     { required: true, message: '区域名称不能为空', trigger: 'blur' }

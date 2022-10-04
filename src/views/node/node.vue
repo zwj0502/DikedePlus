@@ -51,7 +51,7 @@ export default {
       tableData: [],
       formInline: {
         regionId: '',
-        area: ''
+        name: ''
       },
       pageIndex: 1,
       pageSize: 10,
