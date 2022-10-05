@@ -10,19 +10,19 @@
           </el-row>
           <el-row class="details">
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ leftHeard.total }}</div>
               <div class="text">工单总数<span class="em">(个)</span></div>
             </el-col>
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ leftHeard.completedTotal }}</div>
               <div class="text">完成工单<span class="em">(个)</span></div>
             </el-col>
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ leftHeard.cancelTotal }}</div>
               <div class="text">拒绝工单<span class="em">(个)</span></div>
             </el-col>
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ leftHeard.workerCount }}</div>
               <div class="text">运营人员数<span class="em">(个)</span></div>
             </el-col>
           </el-row>
@@ -36,19 +36,19 @@
           </el-row>
           <el-row class="details">
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ rightHeard.total }}</div>
               <div class="text">工单总数<span class="em">(个)</span></div>
             </el-col>
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ rightHeard.completedTotal }}</div>
               <div class="text">完成工单<span class="em">(个)</span></div>
             </el-col>
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ rightHeard.cancelTotal }}</div>
               <div class="text">拒绝工单<span class="em">(个)</span></div>
             </el-col>
             <el-col :span="6" :push="2">
-              <div class="num">10</div>
+              <div class="num">{{ rightHeard.workerCount }}</div>
               <div class="text">运维人员数<span class="em">(个)</span></div>
             </el-col>
           </el-row>
@@ -71,6 +71,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 :picker-options="{disabledDate:dateOptions}"
+                @change="result"
               >
                 />
               </el-date-picker></div>
@@ -82,9 +83,9 @@
           </div>
           <div class="charts">
             <!-- 显示图形 -->
-            <!-- <div class="picture">1111</div> -->
+            <div v-if="showCharts" id="chartsMain" style="width: 1060px;height:460px;" />
             <!-- 显示图片 -->
-            <div class="empty">
+            <div v-else class="empty">
               <img src="../../assets/imgs/empty.png" alt="">
               <span class="emptyTxt">暂无数据</span>
             </div>
@@ -96,12 +97,12 @@
           <!-- 头部 -->
           <div class="peopleHeader">
             <span style="fontWeight:600">人效排名&nbsp;&nbsp;(月度)</span>
-            <el-select v-model="value" placeholder="请选择">
+            <el-select v-model="defaultValue" placeholder="请选择">
               <el-option
                 v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               />
             </el-select>
           </div>
@@ -127,33 +128,40 @@
 </template>
 
 <script>
+// import * as echarts from 'echarts'
 import dayFormat from '@/utils/dayFormat'
+import { taskReportInfoAPI } from '@/api/userStats'
+import { getRegionAPI } from '@/api/user'
 export default {
+  name: 'Stats',
   data() {
     return {
+      showCharts: false,
       // 控制按钮是否点击上
       isChecked: true,
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      // 下拉选项
+      options: [],
       value: '',
-      value1: []
+      value1: [],
+      // 头部要渲染的数据
+      leftHeard: {},
+      rightHeard: {},
+      // 是否是运维人员
+      isRepair: false,
+      // 人效排名时间(右下)
+      rankStartTime: '',
+      rankEndTime: '',
+      defaultValue: ''
     }
   },
+  created() {
+    this.taskReportInfo()
+    this.getRegion()
+    this.getRankTime()
+  },
   mounted() {
+    // 初始化echarts配置
+    // this.initEcharts()
     // 默认初始化时选中一天
     this.value1 = []
     const end = new Date()
@@ -162,6 +170,118 @@ export default {
     this.value1.push(end)
   },
   methods: {
+    /* eslint-disable */
+    // initEcharts() {
+    // const  option = {
+    //   tooltip: {
+    //     axisPointer: {
+    //       type: 'shadow',
+    //       label: {
+    //         show: false
+    //       }
+    //     }
+    //   },
+    //   legend: {
+    //     data: ['Growth', 'Budget 2011', 'Budget 2012'],
+    //     itemGap: 5
+    //   },
+    //   xAxis: [
+    //     {
+    //       type: 'category',
+    //        data: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],//内容
+    //     }
+    //   ],
+    //   yAxis: [
+    //     {
+    //       type: 'value',
+    //       name: '工作量:个',
+    //     }
+    //   ],
+    //   series: [
+    //     {
+    //       name: '2月20日',
+    //       type: 'bar',
+    //       data: [3, 4, 5, 4, 3, 6, 8, 1, 3, 6, 1, 3],
+    //       itemStyle: {
+    //         color: '#8da4fd',
+    //         barBorderRadius: [10, 10, 0, 0], 
+    //         barWidth: 8
+		// 			},
+    //     },
+    //     {
+    //       name: '3月15日',
+    //       type: 'bar',
+    //       data: [2, 1, 4, 6, 7, 2, 3, 1, 4, 1, 5, 7],
+    //       itemStyle: {
+    //         color: '#fa6061',
+    //         barBorderRadius: [10, 10, 0, 0], 
+    //         barWidth: 8
+		// 			},
+    //     }
+    //   ]
+    // };
+    //   const myChart = echarts.init(document.getElementById('chartsMain'))// 图标初始化
+    //   myChart.setOption(option)// 渲染页面
+    //   // 随着屏幕大小调节图表
+    //   window.addEventListener('resize', () => {
+    //     myChart.resize()
+    //   })
+    // },
+    // 利用选中后触发change方法，把最终获取的时间格式化
+    result() {
+      // console.log(this.value1)
+      const startTime = dayFormat.getFormatTimes(this.value1[0])
+      console.log(startTime)
+      const endTime = dayFormat.getFormatTimes(this.value1[1])
+      console.log(endTime)
+    },
+    // onPick(times) {
+    //   // console.log(times)
+    //   const minDate = times.minDate
+    //   const maxDate = times.maxDate
+    //   // 2个都有值再去执行转换函数
+    //   if (minDate && maxDate) {
+    //     console.log(minDate)
+    //     console.log(maxDate)
+    //     console.log(this.value1)
+    //   }
+    // },
+    // 获取区域列表做下拉
+    async getRegion() {
+      // 这里后端做好分页我如何拿所有数据
+      const { data } = await getRegionAPI({
+        pageIndex: '',
+        pageSize: 1000
+      })
+      console.log(data)
+      const option = data.currentPageRecords
+      option.unshift({ id: '0', name: '全部' })
+      // console.log(option)
+      this.options = option
+      this.defaultValue = this.options[0].id
+      // console.log(this.options)
+    },
+    // 日期格式的转换方法
+    // 获取区域排名的月度时间
+    getRankTime() {
+      this.rankStartTime = dayFormat.getCurrMonthDay().starttime
+      this.rankEndTime = dayFormat.getCurrMonthDay().endtime
+    },
+    // 初始化获取头部渲染需要的数据
+    async taskReportInfo() {
+      const startTime = dayFormat.getToday().starttime
+      // console.log(startTime)
+      const endTime = dayFormat.getToday().endtime
+      const { data } = await taskReportInfoAPI(startTime, endTime)
+      // console.log(data)
+      data.forEach(item => {
+        if (item.repair === true) {
+          this.rightHeard = item
+        } else {
+          this.leftHeard = item
+        }
+      })
+    },
     // 选择今天及今天以后的日期
     dateOptions(time) {
       return time.getTime() > Date.now()
@@ -311,7 +431,7 @@ export default {
 }
 
 .charts {
-  background-color: orange;
+  // background-color: orange;
   width: 100%;
   height: 100%;
   margin-top: 20px;

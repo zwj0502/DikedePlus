@@ -63,9 +63,11 @@ export default {
   // 获取当前月除去时分秒
   getCurrMonthDay() {
     const obj = {
-      starttime: ''
+      starttime: '',
+      endtime: ''
     }
     obj.starttime = moment(moment().month(moment().month()).startOf('month').valueOf()).format('YYYY-MM-DD')
+    obj.endtime = moment(moment().month(moment().month()).endOf('month').valueOf()).format('YYYY-MM-DD')
     return obj
   },
   // 获取上一个月的开始结束时间
@@ -95,5 +97,14 @@ export default {
     }
     obj.starttime = moment().startOf('year').format('YYYY-MM-DD')
     return obj
+  },
+  // 日期格式化
+  getFormatTimes(date) {
+    var y = date.getFullYear()
+    var m = date.getMonth() + 1
+    m = m < 10 ? '0' + m : m
+    var d = date.getDate()
+    d = d < 10 ? ('0' + d) : d
+    return y + '-' + m + '-' + d
   }
 }
