@@ -35,9 +35,16 @@
             <el-option label="区域二" value="beijing" /> -->
             </el-select>
           </el-form-item>
-          <el-form-item label="归属合作商">
-            <el-select v-model="formDate.ownerId" placeholder="归属合作商">
+          <el-form-item label="归属合作商ID">
+            <el-select v-model="formDate.ownerId" placeholder="归属合作商ID">
               <el-option v-for="item in partnersList" :key="item.id" :label="item.name" :value="item.id" />
+              <!-- <el-option label="区域一" value="shanghai" />
+            <el-option label="区域二" value="beijing" /> -->
+            </el-select>
+          </el-form-item>
+          <el-form-item label="归属合作商">
+            <el-select v-model="formDate.ownerName" placeholder="归属合作商">
+              <el-option v-for="item in partnersList" :key="item.id" :label="item.name" :value="item.name" />
               <!-- <el-option label="区域一" value="shanghai" />
             <el-option label="区域二" value="beijing" /> -->
             </el-select>
@@ -51,7 +58,7 @@
             />
           </el-form-item>
           <el-form-item
-            prop="remark"
+            prop="addr"
             :rules="[{required:true,message:'备注不能为空',trigger:'blur'}, { min: 1, max: 50, message: '备注长度1--50', trigger: 'blur' }]"
           >
             <el-input v-model.trim="formDate.addr" type="textarea" row="3" />
@@ -66,7 +73,7 @@
   </div>
 </template>
 <script>
-import { postLevelManagementAPI, TheEditorRegionaldetailsAPI } from '@/api/LevelManagement'
+import { postpointAPI, putpointAPI } from '@/api/point'
 import { regionData, CodeToText } from 'element-china-area-data'
 export default {
   name: 'NewRegionsss',
@@ -84,6 +91,11 @@ export default {
     partnersList: {
       type: Array,
       required: true
+    },
+    createUserId: {
+      type: [String, Number],
+      required: true
+
     }
   },
   data() {
@@ -93,9 +105,9 @@ export default {
         regionId: '',
         Business: '',
         ownerId: '',
-        selectedOptions: '',
-        addr: ''
-
+        ownerName: '',
+        addr: '',
+        selectedOptions: ''
       },
       Businesscircle: [
         { id: 1, name: '学校' },
@@ -104,16 +116,17 @@ export default {
         { id: 4, name: '交通枢纽' }
       ],
       options: regionData,
-      // rules: {
-      //   regionName: [
-      //     { required: true, message: '区域名称不能为空', trigger: 'blur' }
+      rules: {
+        name: [
+          { required: true, message: '区域名称不能为空', trigger: 'blur' }
 
-      //   ],
-      //   remark: [{ required: true, message: '备注说明不能为空', trigger: 'blur' }
+        ],
+        addr: [{ required: true, message: '备注说明不能为空', trigger: 'blur' }
 
-      //   ]
-      // },
+        ]
+      },
       loading: false
+
     }
   },
   computed: {
@@ -125,15 +138,41 @@ export default {
     handleClsoe() {
       this.$emit('update:visible', false)
       this.$refs.roleDialogForm.resetFields()
-      this.formDate = ''
+      // this.$refs.roleDialogForm.resetFields()
+
+      this.formDate = {}
     },
     async getBtn() {
       this.loading = true
       try {
-        this.formDate.id ? await TheEditorRegionaldetailsAPI(this.formDate.id, this.formDate) : await postLevelManagementAPI(this.formDate)
+        this.formDate.id ? await putpointAPI(this.formDate.id, {
+          name: this.formDate.name,
+          addr: this.formDate.addr,
+          regionId: this.formDate.regionId,
+          businessId: this.formDate.Business,
+          ownerId: this.formDate.ownerId,
+          ownerName: this.formDate.ownerName,
+          // eslint-disable-next-line no-dupe-keys
+          addr: this.formDate.addr,
+          areaCode: this.formDate.selectedOptions[2],
+          createUserId: this.createUserId }) : await postpointAPI(
+          {
+            name: this.formDate.name,
+            addr: this.formDate.addr,
+            regionId: this.formDate.regionId,
+            businessId: this.formDate.Business,
+            ownerId: this.formDate.ownerId,
+            ownerName: this.formDate.ownerName,
+            // eslint-disable-next-line no-dupe-keys
+            addr: this.formDate.addr,
+            areaCode: this.formDate.selectedOptions[2],
+            createUserId: this.createUserId
+          }
+        )
         this.$refs.roleDialogForm.resetFields()
         this.$message.success(this.formDate.id ? '编辑成功' : '创建成功')
         this.handleClsoe()
+        console.log(123)
         this.$emit('postLevelManagement')
       } catch (error) {
         this.$message.error('创建失败')
@@ -141,10 +180,10 @@ export default {
         this.loading = false
       }
     },
-    handleChange() {
-      for (let i = 0; i < this.selectedOptions.length; i++) {
-        this.selectedOptionslist += CodeToText[this.selectedOptions[i]]
-      }
+    handleChange(value) {
+      this.formDate.addr = (CodeToText[value[0]] + CodeToText[value[1]] + CodeToText[value[2]])
+    //   console.log(Code)
+    //   this.selectedOptionsList = [CodeToText[value[0]], CodeToText[value[1]], CodeToText[value[2]]]
     }
 
   }

@@ -35,3 +35,40 @@ export function getpartnersAPI(params) {
     params
   })
 }
+
+/**
+ * 新增点位
+ * @param {*} params
+ * @returns
+ */
+export function postpointAPI(data) {
+  return request({
+    url: '/api/vm-service/node',
+    method: 'post',
+    data
+  })
+}
+/**
+ * 修改点位
+ * @param {*} params
+ * @returns
+ */
+export function putpointAPI(id, data) {
+  return request({
+    url: `/api/vm-service/node/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 点位详情
+ * @param {*} params
+ * @returns
+ */
+export function getdetailsAPI(id) {
+  return request({
+    url: `/api/vm-service/node/vmList/${id}`,
+    method: 'get'
+  })
+}

@@ -26,7 +26,7 @@
         <LevelManagement v-else :table-data="searchList" @deleteOk="searcherBtn" />
         <!-- 分页组件 -->
         <Paging v-if="isend" :loading="loading" :total-count="totalCount" :page-index="pageIndex" :total-page="totalPage" @getCarList="getCarList" />
-        <NewLevel ref="NewRegion" :partners-list="partnersList" :theregionallist="Theregionallist" :visible.sync="visible" @postLevelManagement="getLevelManagement" />
+        <NewLevel ref="NewRegion" :create-user-id="createUserId" :partners-list="partnersList" :theregionallist="Theregionallist" :visible.sync="visible" @postLevelManagement="getPointsearch" />
       </div>
     </el-card>
   </div>
@@ -62,9 +62,9 @@ export default {
       isMain: true,
       isend: true,
       Theregionallist: [
-
       ],
-      partnersList: []
+      partnersList: [],
+      createUserId: ''
     }
   },
   created() {
@@ -111,10 +111,18 @@ export default {
       // console.log(data)
     },
     async getNewLevel() {
+      console.log(this.$store.getters.userId)
+      this.createUserId = this.$store.getters.userId
       this.visible = true
       const { data } = await getpartnersAPI({ pageSize: 10 })
       // console.log(data)
       this.partnersList = data.currentPageRecords
+    },
+    TheEditorBtn(node) {
+      console.log(node)
+      this.$refs.NewRegion.formDate = { ...node }
+      // console.log(this.$refs.NewRegion.formDate)
+      this.visible = true
     }
   }
 }

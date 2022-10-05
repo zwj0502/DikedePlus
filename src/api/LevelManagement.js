@@ -51,7 +51,7 @@ export function deleteRegionaldetailsAPI(id) {
   })
 }
 /**
- * 删除区域
+ * 编辑区域
  * @param {*} id 区域id
  * @returns
  */
