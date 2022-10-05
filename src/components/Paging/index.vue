@@ -26,11 +26,11 @@ export default {
       type: [String, Number],
       //   required: true
       default: 0
-    },
-    tableData: {
-      type: Array,
-      required: true
     }
+    // tableData: {
+    //   type: Array,
+    //   required: true
+    // }
   },
   data() {
     return {
